@@ -1,7 +1,20 @@
 "use client"
-import { useMemo } from "react";
-import { Quill } from "react-quill";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-label";
 import { FaEdit, FaKey, FaSave, FaShareAlt } from "react-icons/fa";
+import { Quill } from "react-quill";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { useState } from "react";
+
 
 const Size = Quill.import("formats/size");
 Size.whitelist = ["extra-small", "small", "medium", "large"];
@@ -18,25 +31,6 @@ Font.whitelist = [
     "lucida"
 ];
 Quill.register(Font, true);
-
-export const useModules = ({ saveHandler, editHandler, imageHandler }: any) => {
-    return useMemo(() => ({
-        toolbar: {
-            container: "#toolbar",
-            handlers: {
-                image: imageHandler,
-                save: saveHandler,
-                edit: editHandler
-
-            }
-        },
-        history: {
-            delay: 500,
-            maxStack: 100,
-            userOnly: true
-        }
-    }), [])
-};
 
 // Formats objects for setting up the Quill editor
 export const formats = [
@@ -61,7 +55,7 @@ export const formats = [
 ];
 
 // Quill Toolbar component
-const QuillToolbar = () => (
+const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler, newUrl, setNewUrl }: any) => (
     <div id="toolbar" className="">
         <span className="ql-formats">
             <select className="ql-font" defaultValue="arial">
@@ -118,16 +112,43 @@ const QuillToolbar = () => (
             <button className="ql-clean" />
         </span>
         <span className="ql-formats w-full flex items-center justify-center space-x-3">
-            <button className="ql-save">
+            <button className="ql-save" onClick={saveHandler}>
                 <FaSave />
             </button>
-            <button className="ql-edit">
-                <FaEdit />
-            </button>
-            <button className="ql-password">
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="outline"><FaEdit /></Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Update Url</DialogTitle>
+                        <DialogDescription>
+                            Make changes to your URL, example /haslabs
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                                new Url
+                            </Label>
+                            <Input
+                                id="url"
+                                defaultValue="Pedro Duarte"
+                                value={newUrl}
+                                onChange={(e) => setNewUrl(e.target.value)}
+                                className="col-span-3"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={editHandler}>Save changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <button className="ql-password" onClick={passwordHandler}>
                 <FaKey />
             </button>
-            <button className="ql-share">
+            <button className="ql-share" onClick={shareHandler}>
                 <FaShareAlt />
             </button>
         </span>

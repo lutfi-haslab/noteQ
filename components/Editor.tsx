@@ -1,13 +1,21 @@
 "use client"
+import { Document } from '@prisma/client';
 import * as AWS from 'aws-sdk';
 import * as aws from "aws-sdk/lib/maintenance_mode_message.js";
+import axios from 'axios';
 import * as crypto from 'crypto';
 import dynamic from 'next/dynamic';
 import React, { LegacyRef, useEffect, useRef, useState } from 'react';
 import type ReactQuill from 'react-quill';
+import { useRouter } from 'next/navigation'
 import 'react-quill/dist/quill.snow.css';
-import EditorToolbar, { formats, useModules } from "./EditorToolbar";
+import EditorToolbar, { formats } from "./EditorToolbar";
 aws.suppress = true;
+
+const modules = dynamic(() => import("./EditorToolbar"), {
+  loading: () => <p>loading...</p>,
+  ssr: false,
+});
 
 interface IWrappedComponent extends React.ComponentProps<typeof ReactQuill> {
   forwardedRef: LegacyRef<ReactQuill>
@@ -37,23 +45,31 @@ const s3 = new AWS.S3({
   endpoint: process.env.NEXT_PUBLIC_S3_endpoint,
 });
 
-const INITIAL = `<p>Hello</p><p>How are you?</p><p>are you okay?</p><p>Love you</p><p><br></p><p><img src=\"https://pub-867c2a8b0bb046428323e9ca7550be21.r2.dev/91a215ee17Group 140.png\"></p>`
+// const INITIAL = `<p>Hello</p><p>How are you?</p><p>are you okay?</p><p>Love you</p><p><br></p><p><img src=\"https://pub-867c2a8b0bb046428323e9ca7550be21.r2.dev/91a215ee17Group 140.png\"></p>`
 
 
-const RichTextEditor = () => {
+
+
+
+const RichTextEditor = ({ props }: { props: Document }) => {
+  const router = useRouter()
   const [value, setValue] = useState('');
+  const [newUrl, setNewUrl] = useState('');
   const quillRef = useRef<ReactQuill>(null)
+  let fetchOnce = false;
 
   useEffect(() => {
-    setValue(INITIAL);
+    if (props?.data_doc && !fetchOnce) {
+      fetchOnce = true
+      setValue(props.data_doc);
+    }
   }, [])
 
   useEffect(() => {
-    console.log(value);
+    console.log(JSON.stringify(value));
   }, [value])
 
   const imageHandler = () => {
-
     const editor = (quillRef as any)?.current.getEditor();
     if (typeof document !== 'undefined') {
       const input = document.createElement("input");
@@ -87,23 +103,79 @@ const RichTextEditor = () => {
     }
   }
 
-  const saveHandler = () => {
-    alert("save");
+  const saveHandler = async () => {
+    try {
+      console.log("value", value)
+      if (value) {
+        const res = await axios.post('/api/document', {
+          id: props?.id,
+          data_doc: value,
+          isPassword: false,
+          password: ""
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        const result = await res.data;
+        setValue(res.data.data_doc);
+        console.log("Success:", result);
+        // alert("success");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("error")
+    }
   }
 
-  const editHandler = () => {
-    alert("edit");
+  const editHandler = async () => {
+    try {
+      const res = await axios.put('/api/document', {
+        id: props?.id,
+        newId: newUrl
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const result = await res.data;
+      console.log("Success:", result);
+      if (result) {
+        router.push(`/${newUrl}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("error")
+    }
   }
+
+  const modules = React.useMemo(() => {
+    return {
+      toolbar: {
+        container: "#toolbar",
+        handlers: {
+          image: imageHandler,
+        }
+      },
+      history: {
+        delay: 500,
+        maxStack: 100,
+        userOnly: true
+      }
+    };
+  }, []);
 
   return (
     <div>
-      <EditorToolbar />
+      <EditorToolbar saveHandler={saveHandler} editHandler={editHandler} setNewUrl={setNewUrl} newUrl={newUrl} />
       <ReactQuillBase forwardedRef={quillRef}
         className='w-full'
         theme="snow"
         value={value}
         onChange={setValue}
-        modules={useModules({ imageHandler, saveHandler, editHandler })}
+        modules={modules}
         placeholder={"Write something awesome..."}
         formats={formats} />
     </div>
@@ -111,3 +183,7 @@ const RichTextEditor = () => {
 }
 
 export default RichTextEditor
+
+function useMemo(arg0: (content: any, delta: any, source: any, editor: any) => void, arg1: string[]) {
+  throw new Error('Function not implemented.');
+}
