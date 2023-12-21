@@ -10,6 +10,8 @@ import type ReactQuill from 'react-quill';
 import { useRouter } from 'next/navigation'
 import 'react-quill/dist/quill.snow.css';
 import EditorToolbar, { formats } from "./EditorToolbar";
+import { useToast } from "@/components/ui/use-toast"
+
 aws.suppress = true;
 
 const modules = dynamic(() => import("./EditorToolbar"), {
@@ -52,6 +54,7 @@ const s3 = new AWS.S3({
 
 
 const RichTextEditor = ({ props }: { props: Document }) => {
+  const { toast } = useToast()
   const router = useRouter()
   const [value, setValue] = useState('');
   const [newUrl, setNewUrl] = useState('');
@@ -120,12 +123,21 @@ const RichTextEditor = ({ props }: { props: Document }) => {
 
         const result = await res.data;
         setValue(res.data.data_doc);
-        console.log("Success:", result);
+        toast({
+          variant: 'success',
+          title: "Success",
+          description: "Document saved",
+        })
+        // console.log("Success:", result);
         // alert("success");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("error")
+      toast({
+        variant: 'destructive',
+        title: "Error",
+        description: "Ooops, something error",
+      })
     }
   }
 
@@ -141,13 +153,23 @@ const RichTextEditor = ({ props }: { props: Document }) => {
       })
 
       const result = await res.data;
-      console.log("Success:", result);
+      toast({
+        variant: 'success',
+        title: "Success",
+        description: "Document url updated",
+      })
       if (result) {
-        router.push(`/${newUrl}`);
+        setTimeout(() => {
+          router.push(`/${newUrl}`);
+        }, 2000);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("error")
+      toast({
+        variant: 'destructive',
+        title: "Error",
+        description: "Ooops, something error",
+      })
     }
   }
 
@@ -183,7 +205,3 @@ const RichTextEditor = ({ props }: { props: Document }) => {
 }
 
 export default RichTextEditor
-
-function useMemo(arg0: (content: any, delta: any, source: any, editor: any) => void, arg1: string[]) {
-  throw new Error('Function not implemented.');
-}
