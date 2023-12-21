@@ -1,6 +1,17 @@
 import { prisma } from "@/lib/prisma"
 
 
+export async function GET(req: Request) {
+    const {searchParams} = new URL(req.url);
+    const param = searchParams.get("id");
+    const document = await prisma.document.findUnique({
+        where: {
+          id: String(param),
+        }
+      });
+    return Response.json(document)
+}
+
 export async function POST(req: Request) {
     const res = await req.json()
     const data = {

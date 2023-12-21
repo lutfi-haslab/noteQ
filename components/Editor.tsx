@@ -1,42 +1,26 @@
 "use client"
+import { useToast } from "@/components/ui/use-toast";
+import { nanoid } from '@/lib/uuid';
 import { Document } from '@prisma/client';
 import * as AWS from 'aws-sdk';
 import * as aws from "aws-sdk/lib/maintenance_mode_message.js";
 import axios from 'axios';
 import * as crypto from 'crypto';
 import dynamic from 'next/dynamic';
-import React, { LegacyRef, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { LegacyRef, useEffect, useMemo, useRef, useState } from 'react';
 import type ReactQuill from 'react-quill';
-import { useRouter } from 'next/navigation'
 import 'react-quill/dist/quill.snow.css';
-import EditorToolbar, { formats } from "./EditorToolbar";
-import { useToast } from "@/components/ui/use-toast"
+import { formats } from "./EditorToolbar";
+
 
 aws.suppress = true;
 
-const modules = dynamic(() => import("./EditorToolbar"), {
-  loading: () => <p>loading...</p>,
-  ssr: false,
-});
+
 
 interface IWrappedComponent extends React.ComponentProps<typeof ReactQuill> {
   forwardedRef: LegacyRef<ReactQuill>
 }
-
-const ReactQuillBase = dynamic(
-  async () => {
-    const { default: RQ } = await import('react-quill')
-
-    function QuillJS({ forwardedRef, ...props }: IWrappedComponent) {
-      return <RQ ref={forwardedRef} {...props} />
-    }
-
-    return QuillJS
-  },
-  {
-    ssr: false,
-  },
-)
 
 
 const AWS_S3_BUCKET = "haslabs";
@@ -53,7 +37,33 @@ const s3 = new AWS.S3({
 
 
 
-const RichTextEditor = ({ props }: { props: Document }) => {
+const RichTextEditor = ({ props, className }: { props: Document; className: string }) => {
+
+
+  const ReactQuillBase = useMemo(() => {
+    return dynamic(
+      async () => {
+        const { default: RQ } = await import('react-quill')
+
+        function QuillJS({ forwardedRef, ...props }: IWrappedComponent) {
+          return <RQ ref={forwardedRef} {...props} className={nanoid()} />
+        }
+
+        return QuillJS
+      },
+      {
+        ssr: false,
+      },
+    );
+  }, []);
+
+  const EditorToolbar = useMemo(() => {
+    return dynamic(() => import("./EditorToolbar"), {
+      ssr: false,
+    })
+  }, []);
+
+
   const { toast } = useToast()
   const router = useRouter()
   const [value, setValue] = useState('');
@@ -62,10 +72,7 @@ const RichTextEditor = ({ props }: { props: Document }) => {
   let fetchOnce = false;
 
   useEffect(() => {
-    if (props?.data_doc && !fetchOnce) {
-      fetchOnce = true
-      setValue(props.data_doc);
-    }
+    setValue(props.data_doc);
   }, [])
 
   useEffect(() => {
@@ -191,9 +198,9 @@ const RichTextEditor = ({ props }: { props: Document }) => {
 
   return (
     <div>
-      <EditorToolbar saveHandler={saveHandler} editHandler={editHandler} setNewUrl={setNewUrl} newUrl={newUrl} />
+      <EditorToolbar className={className} saveHandler={saveHandler} editHandler={editHandler} setNewUrl={setNewUrl} newUrl={newUrl} />
       <ReactQuillBase forwardedRef={quillRef}
-        className='w-full'
+        className={`w-full ${className}`}
         theme="snow"
         value={value}
         onChange={setValue}

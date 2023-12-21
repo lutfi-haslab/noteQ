@@ -1,7 +1,7 @@
 import { nanoid } from '@/lib/uuid';
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default function Home() {
   redirect(`/${nanoid()}`)
 }
 

@@ -51,12 +51,16 @@ export const formats = [
     "link",
     "image",
     "color",
-    "code-block"
+    "code-block",
+    "clean",
+    "save",
+    "edit",
+    "password",
 ];
 
 // Quill Toolbar component
-const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler, newUrl, setNewUrl }: any) => (
-    <div id="toolbar" className="">
+const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler, newUrl, setNewUrl, className }: any) => (
+    <div id="toolbar" className={className}>
         <span className="ql-formats">
             <select className="ql-font" defaultValue="arial">
                 <option value="arial">Arial</option>
@@ -111,47 +115,49 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
             <button className="ql-code-block" />
             <button className="ql-clean" />
         </span>
-        <span className="ql-formats w-full flex items-center justify-center space-x-3">
+        {/* <span className="ql-formats w-full flex items-center justify-center space-x-3">
             <button className="ql-save" onClick={saveHandler}>
                 <FaSave />
             </button>
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline"><FaEdit /></Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Update Url</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your URL, example /haslabs
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
-                                new Url
-                            </Label>
-                            <Input
-                                id="url"
-                                defaultValue="Pedro Duarte"
-                                value={newUrl}
-                                onChange={(e) => setNewUrl(e.target.value)}
-                                className="col-span-3"
-                            />
+            <div className="ql-edit">
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline"><FaEdit /></Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Update Url</DialogTitle>
+                            <DialogDescription>
+                                Make changes to your URL, example /haslabsb
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="name" className="text-right">
+                                    new Url
+                                </Label>
+                                <Input
+                                    id="url"
+                                    defaultValue="Pedro Duarte"
+                                    value={newUrl}
+                                    onChange={(e) => setNewUrl(e.target.value)}
+                                    className="col-span-3"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={editHandler}>Save changes</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                        <DialogFooter>
+                            <Button onClick={editHandler}>Save changes</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <button className="ql-password" onClick={passwordHandler}>
                 <FaKey />
             </button>
             <button className="ql-share" onClick={shareHandler}>
                 <FaShareAlt />
             </button>
-        </span>
+        </span> */}
     </div>
 );
 
