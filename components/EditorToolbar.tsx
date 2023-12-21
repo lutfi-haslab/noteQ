@@ -115,7 +115,7 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
             <button className="ql-code-block" />
             <button className="ql-clean" />
         </span>
-        {/* <span className="ql-formats w-full flex items-center justify-center space-x-3">
+        <span className="ql-formats w-full flex items-center justify-center space-x-3">
             <button className="ql-save" onClick={saveHandler}>
                 <FaSave />
             </button>
@@ -157,7 +157,7 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
             <button className="ql-share" onClick={shareHandler}>
                 <FaShareAlt />
             </button>
-        </span> */}
+        </span>
     </div>
 );
 
