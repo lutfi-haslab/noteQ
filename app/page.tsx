@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
-import { nanoid } from "@/lib/uuid";
 import * as crypto from 'crypto';
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-  redirect(`/${nanoid()}`)
+  redirect(`/${crypto.randomBytes(7).toString('hex')}`)
 }
