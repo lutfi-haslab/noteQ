@@ -200,6 +200,7 @@ const RichTextEditor = ({ props, className }: { props: Document; className: stri
  if (event.ctrlKey && (event.key === "S" || event.key === "s")) {
       event.preventDefault();
       saveHandler();
+     return false;
   }
 },[value]);
 
