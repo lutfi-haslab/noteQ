@@ -87,18 +87,15 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
             <button className="ql-italic" />
             <button className="ql-underline" />
             <button className="ql-strike" />
+            <button className="ql-blockquote" />
         </span>
         <span className="ql-formats">
             <button className="ql-list" value="ordered" />
             <button className="ql-list" value="bullet" />
+            <button className="ql-list" value="check" />
             <button className="ql-indent" value="-1" />
             <button className="ql-indent" value="+1" />
-        </span>
-        <span className="ql-formats">
-            <button className="ql-script" value="super" />
-            <button className="ql-script" value="sub" />
-            <button className="ql-blockquote" />
-            <button className="ql-direction" />
+             <button className="ql-code-block" />
         </span>
         <span className="ql-formats">
             <select className="ql-align" />
@@ -110,19 +107,13 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
             <button className="ql-image" />
             <button className="ql-video" />
         </span>
-        <span className="ql-formats">
-            <button className="ql-formula" />
-            <button className="ql-code-block" />
-            <button className="ql-clean" />
-        </span>
         <span className="ql-formats w-full flex items-center justify-center space-x-3">
             <button className="ql-save" onClick={saveHandler}>
                 <FaSave />
             </button>
-            <div className="ql-edit">
-                <Dialog>
+            <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="outline"><FaEdit /></Button>
+                        <Button variant="outline" className="ql-edit"><FaEdit /></Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
@@ -150,7 +141,6 @@ const QuillToolbar = ({ saveHandler, editHandler, passwordHandler, shareHandler,
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            </div>
             <button className="ql-password" onClick={passwordHandler}>
                 <FaKey />
             </button>
