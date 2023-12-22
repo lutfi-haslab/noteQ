@@ -8,7 +8,7 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import React, { LegacyRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { LegacyRef, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { formats } from "./EditorToolbar";
@@ -196,6 +196,20 @@ const RichTextEditor = ({ props, className }: { props: Document; className: stri
     };
   }, []);
 
+  const handleKeyDown = useCallback((event) => {
+ if (event.ctrlKey && (event.key === "S" || event.key === "s")) {
+      event.preventDefault();
+      saveHandler();
+  }
+},[value]);
+
+ useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+  
   return (
     <div>
       <EditorToolbar className={className} saveHandler={saveHandler} editHandler={editHandler} setNewUrl={setNewUrl} newUrl={newUrl} />
