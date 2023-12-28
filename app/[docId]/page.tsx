@@ -36,6 +36,7 @@ export default async function DocumentPage({ params }: { params: { docId: string
   }, []);
 
   const document = await fetchDoc(params.docId);
+  console.log(document);
 
 
 

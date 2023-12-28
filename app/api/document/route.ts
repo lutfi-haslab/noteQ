@@ -2,14 +2,21 @@ import { prisma } from "@/lib/prisma"
 
 
 export async function GET(req: Request) {
-    const {searchParams} = new URL(req.url);
-    const param = searchParams.get("id");
-    const document = await prisma.document.findUnique({
-        where: {
-          id: String(param),
-        }
-      });
-    return Response.json(document)
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (id) {
+        const document = await prisma.document.findUnique({
+            where: {
+                id: String(id),
+            }
+        });
+        return Response.json(document)
+    } else {
+        const document = await prisma.document.findMany();
+        return Response.json(document)
+    }
+
 }
 
 export async function POST(req: Request) {
@@ -32,17 +39,15 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
     const res = await req.json()
-    const data = {
-        oldId: res.id,
-        newId: res.newId
-    }
 
     const document = await prisma.document.update({
         where: {
-            id: data.oldId
+            id: res.id
         },
         data: {
-            id: data.newId
+            password: res.password,
+            isPassword: res.isPassword,
+            id: res.newId ? res.newId : res.id
         }
     })
 
